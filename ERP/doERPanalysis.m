@@ -42,9 +42,12 @@ clc
 clear
 %% ----- collect system info and data location
 eeglabpath = fileparts(which('eeglab')); % eeglab path
+helpdlg('Please choose raw data folder');
 rawPath = uigetdir(pwd,'Choose raw data folder'); % raw data path
 cntFolders =g_ls([rawPath filesep 'sub*']); % search data in raw data path
+helpdlg('Please choose temp file store folder');
 tempPath = uigetdir(pwd,'Choose temp file store folder'); % path to store temp data
+helpdlg('Please choose ERP file store folder');
 erpPath =  uigetdir(pwd,'Choose ERP store folder'); % path to put finnal ERPs files
 
 %% ---- processing parameter
@@ -68,13 +71,13 @@ filt_2 = [ 0.05 30];
 filt_2_order = 2;
 % ica method used
 ica_method = 'binica';
-
+helpdlg('Please choose saica_cfg file');
 [filename, pathname, ~] = uigetfile('*.mat','Choose ''saica_cfg.mat''');% config file for ICA-based EOG correction
 corEOGconfig = [pathname filename];
 
 % setup bdffile for define epoch rule
-bdfFile = {'G:\EEG\target.txt';...
-    'G:\EEG\cue.txt';...
+bdfFile = {'/Volumes/ResearchLife_2/ERP-Eyegaze/05-genERP/BDF/fix/target.txt';...
+    '/Volumes/ResearchLife_2/ERP-Eyegaze/05-genERP/BDF/fix/cue.txt';...
     };
 % cue time window
 cueRange =  [-100  300];
