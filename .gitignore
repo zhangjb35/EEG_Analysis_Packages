@@ -4,3 +4,5 @@
 *.sc
 *.sph
 *.wts
+*.wgt
+ERP/bias_after_adjust

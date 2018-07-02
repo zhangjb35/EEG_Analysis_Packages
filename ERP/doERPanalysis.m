@@ -52,11 +52,11 @@ erpPath =  uigetdir(pwd,'Choose ERP store folder'); % path to put finnal ERPs fi
 
 %% ---- processing parameter
 % which temp for to save
-savingOpt = [0;...% import and merge
+savingOpt = [1;...% import and merge
     0;...% clean record error
     0;...% re-reference
     0;...% high-pass filtering with 0.05 Hz, with IIR, Order 2
-    0;...% run ICA
+    1;...% run ICA
     0;...% ICA-based EOG correction
     0;...% Generate event list file
     0;...% Assign bin to data based on BDF
