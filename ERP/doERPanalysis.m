@@ -11,18 +11,18 @@
 
 % 2. Confirm the core step need to performed for your experiment
 %   The scripts based on EEGLAB and ERPLAB, core step include:
-%   1) import and merge it if necessary
-%   2) clean record error
-%  3) re-reference
-%   4) high-pass filtering with 0.05 Hz, with IIR, Order 2
-%   5) run ICA
-%   6) perferm ICA-based EOG correction
-%   7) generate event list file
-%   8) assign bin to data based on BDF
-%   9) epoch data
-%   10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
-%   11) remove artifacts
-%  12) averaging and output ERPs files
+%	1) import and merge it if necessary
+%	2) clean record error
+%	3) re-reference
+%	4) high-pass filtering with 0.05 Hz, with IIR, Order 2
+%	5) run ICA
+%	6) perferm ICA-based EOG correction
+%	7) generate event list file
+%	8) assign bin to data based on BDF
+%	9) epoch data
+%	10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
+%	11) remove artifacts
+%	12) averaging and output ERPs files
 
 %-------------------------------------------------------------------------
 %
@@ -51,7 +51,7 @@ helpdlg('Please choose ERP file store folder');
 erpPath =  uigetdir(pwd,'Choose ERP store folder'); % path to put finnal ERPs files
 
 %% ---- processing parameter
-% which temp for to save
+% which temp file to save
 savingOpt = [1;...% import and merge
     0;...% clean record error
     0;...% re-reference
@@ -83,11 +83,11 @@ bdfFile = {'/Volumes/ResearchLife_2/ERP-Eyegaze/05-genERP/BDF/fix/target.txt';..
 cueRange =  [-100  300];
 cueBaseline = [ -100 0];
 % target time window
-targetRange = [-1350.0  800];
+targetRange = [-1350  800];
 targetBaseline = [-1200 -1000];
 subLockObject = {'_target' '_cue'}; % Profix for output ERPs files
 
-% artifacts theshold
+% artifacts theshold used
 artTheshold = 75; % for channels except HEO, VEO; in uV
 artTheshold_HEO = 60;
 artTheshold_VEO = 80;
