@@ -1,27 +1,27 @@
 %----- Usage of the script
 % 1. Check the setup for new analysis, include:
-%   1) Location of .cnt folder (naming with sub*)
-%   2) Chose which temp file need to store (input 1 for that file)
-%   3) If need temp file, please setup the rules of naming for temp files
-%   4) Check Bin Define File (BDF). Please comfirm the rule used to define
-%   the bin matched with the real data and design of experiment
-%   5) Setup profix for different ERPs defined by BDF (e.g. cue or target)
-%   6) Check the time range and baseline setup for different ERPs
-%   7) Check the setup for the filter (range, type, and design)
+%	1) Location of .cnt folder (naming with sub*)
+%	2) Chose which temp file need to store (input 1 for that file)
+%	3) If need temp file, please setup the rules of naming for temp files
+%	4) Check Bin Define File (BDF). Please comfirm the rule used to define
+%	the bin matched with the real data and design of experiment
+%	5) Setup profix for different ERPs defined by BDF (e.g. cue or target)
+%	6) Check the time range and baseline setup for different ERPs
+%	7) Check the setup for the filter (range, type, and design)
 
 % 2. Confirm the core step need to performed for your experiment
 %   The scripts based on EEGLAB and ERPLAB, core step include:
-%   1) import and merge it if necessary
-%   2) clean record error
+%	1) import and merge it if necessary
+%	2) clean record error
 %	3) re-reference
-%   4) high-pass filtering with 0.05 Hz, with IIR, Order 2
-%   5) run ICA
-%   6) perferm ICA-based EOG correction
-%   7) generate event list file
-%   8) assign bin to data based on BDF
-%   9) epoch data
-%   10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
-%   11) remove artifacts
+%	4) high-pass filtering with 0.05 Hz, with IIR, Order 2
+%	5) run ICA
+%	6) perferm ICA-based EOG correction
+%	7) generate event list file
+%	8) assign bin to data based on BDF
+%	9) epoch data
+%	10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
+%	11) remove artifacts
 %	12) averaging and output ERPs files
 
 %-------------------------------------------------------------------------
@@ -210,7 +210,7 @@ for subjNumber = 1:numel(cntFolders)
         if savingOpt(10) == 1
             pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
         end
-        %% ----- Step#11: mark EOG artifacts
+        %% ----- Step#11: mark artifacts
         EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 2], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', [ 0 EEG.xmax*1000] );
         if i==1
             EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 3], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', targetBaseline );
@@ -224,7 +224,7 @@ for subjNumber = 1:numel(cntFolders)
             pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
         end
         EEG = pop_summary_AR_eeg_detection(EEG, [tempPath filesep 'AR_summary_' EEG.setname '.txt']);
-       %% ----- Step#12: generate average ERP
+       %% ----- Step#12: generate averaged ERP exclude artifacts
         ERP = pop_averager( EEG , 'Criterion', 'good', 'ExcludeBoundary', 'on', 'SEM', 'on' );
         if savingOpt(12)==1
             ERP = pop_savemyerp(ERP, 'erpname',...
