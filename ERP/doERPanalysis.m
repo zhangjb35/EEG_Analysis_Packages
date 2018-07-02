@@ -13,7 +13,7 @@
 %   The scripts based on EEGLAB and ERPLAB, core step include:
 %   1) import and merge it if necessary
 %   2) clean record error
- %  3) re-reference
+%	3) re-reference
 %   4) high-pass filtering with 0.05 Hz, with IIR, Order 2
 %   5) run ICA
 %   6) perferm ICA-based EOG correction
@@ -22,17 +22,17 @@
 %   9) epoch data
 %   10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
 %   11) remove artifacts
-%  12) averaging and output ERPs files
+%	12) averaging and output ERPs files
 
 %-------------------------------------------------------------------------
 %
-% Welcome to find bugs, suggest improvements, and 
-% discuss with the author
+%	Welcome to find bugs, suggest improvements, and 
+%	discuss with the author
 %
 %                      Jinbo Zhang    
 %
 %   Website: https://www.jinboasltw.cc
-%   Email: sopherwit@gmail.com     
+%   Mail: sopherwit@gmail.com     
 %   Github: https://github.com/Jinboasltw
 %
 %-------------------------------------------------------------------------
@@ -186,7 +186,7 @@ for subjNumber = 1:numel(cntFolders)
     for i=1:2
         %% get EEG data
         EEG = EEG_origin;
-        %% ----- Step#08&09: Epoch data
+        %% ----- Step#08 & 09: Epoch data
         %% assign bin
         EEG  = pop_binlister( EEG , 'BDF', bdfFile{i}, 'IndexEL',  1, 'SendEL2', 'EEG', 'Voutput',...
             'EEG' );
@@ -232,7 +232,7 @@ for subjNumber = 1:numel(cntFolders)
         end
     end
 end
-%% ----- Usage of the script
+%% ----- Extend of the script
 % 3. There are some code you can used to do debug 
 %   1) Check plot of EEG data
 %       pop_eegplot(EEG)
