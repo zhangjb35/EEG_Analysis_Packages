@@ -1,38 +1,38 @@
 %----- Usage of the script
 % 1. Check the setup for new analysis, include:
-%	1) Location of .cnt folder (naming with sub*)
-%	2) Chose which temp file need to store (input 1 for that file)
-%	3) If need temp file, please setup the rules of naming for temp files
-%	4) Check Bin Define File (BDF). Please comfirm the rule used to define
-%	the bin matched with the real data and design of experiment
-%	5) Setup profix for different ERPs defined by BDF (e.g. cue or target)
-%	6) Check the time range and baseline setup for different ERPs
-%	7) Check the setup for the filter (range, type, and design)
+%   1) Location of .cnt folder (naming with sub*)
+%   2) Chose which temp file need to store (input 1 for that file)
+%   3) If need temp file, please setup the rules of naming for temp files
+%   4) Check Bin Define File (BDF). Please comfirm the rule used to define
+%   the bin matched with the real data and design of experiment
+%   5) Setup profix for different ERPs defined by BDF (e.g. cue or target)
+%   6) Check the time range and baseline setup for different ERPs
+%   7) Check the setup for the filter (range, type, and design)
 
 % 2. Confirm the core step need to performed for your experiment
 %   The scripts based on EEGLAB and ERPLAB, core step include:
-%	1) import and merge it if necessary
-%	2) clean record error
-%	3) re-reference
-%	4) high-pass filtering with 0.05 Hz, with IIR, Order 2
-%	5) run ICA
-%	6) perferm ICA-based EOG correction
-%	7) generate event list file
-%	8) assign bin to data based on BDF
-%	9) epoch data
-%	10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
-%	11) remove artifacts
-%	12) averaging and output ERPs files
+%   1) import and merge it if necessary
+%   2) clean record error
+%  3) re-reference
+%   4) high-pass filtering with 0.05 Hz, with IIR, Order 2
+%   5) run ICA
+%   6) perferm ICA-based EOG correction
+%   7) generate event list file
+%   8) assign bin to data based on BDF
+%   9) epoch data
+%   10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
+%   11) remove artifacts
+%  12) averaging and output ERPs files
 
 %-------------------------------------------------------------------------
 %
-%	Welcome to find bugs, suggest improvements, and 
-%	discuss with the author
+% Welcome to find bugs, suggest improvements, and
+% discuss with the author
 %
-%                      Jinbo Zhang    
+%                      Jinbo Zhang
 %
 %   Website: https://www.jinboasltw.cc
-%   Mail: sopherwit@gmail.com     
+%   Email: sopherwit@gmail.com
 %   Github: https://github.com/Jinboasltw
 %
 %-------------------------------------------------------------------------
@@ -49,7 +49,7 @@ erpPath =  uigetdir(pwd,'Choose ERP store folder'); % path to put finnal ERPs fi
 
 %% ---- processing parameter
 % which temp for to save
-savingOpt = [1;...% import and merge
+savingOpt = [0;...% import and merge
     0;...% clean record error
     0;...% re-reference
     0;...% high-pass filtering with 0.05 Hz, with IIR, Order 2
@@ -58,7 +58,7 @@ savingOpt = [1;...% import and merge
     0;...% Generate event list file
     0;...% Assign bin to data based on BDF
     0;...% Epoch data
-    1;...% Band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
+    0;...% Band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
     0;...% Remove artifacts
     1]; % Averaging and output ERPs files
 % filter parameter
@@ -67,7 +67,7 @@ filt_1_order = 2;
 filt_2 = [ 0.05 30];
 filt_2_order = 2;
 % ica method used
-ica_method = 'runica';
+ica_method = 'binica';
 
 [filename, pathname, ~] = uigetfile('*.mat','Choose ''saica_cfg.mat''');% config file for ICA-based EOG correction
 corEOGconfig = [pathname filename];
@@ -75,7 +75,7 @@ corEOGconfig = [pathname filename];
 % setup bdffile for define epoch rule
 bdfFile = {'G:\EEG\target.txt';...
     'G:\EEG\cue.txt';...
-    }; 
+    };
 % cue time window
 cueRange =  [-100  300];
 cueBaseline = [ -100 0];
@@ -86,8 +86,8 @@ subLockObject = {'_target' '_cue'}; % Profix for output ERPs files
 
 % artifacts theshold
 artTheshold = 75; % for channels except HEO, VEO; in uV
-artTheshold_HEO = 100;
-% artTheshold_VEO = 100;
+artTheshold_HEO = 60;
+artTheshold_VEO = 80;
 %% ---- Batch Analysis Start
 for subjNumber = 1:numel(cntFolders)
     % get specific data source
@@ -170,6 +170,7 @@ for subjNumber = 1:numel(cntFolders)
     EEG = pop_subcomp( EEG,  find(EEG.reject.gcompreject>0), 0);
     % reimport EOG to ICA corrected data
     EEG.data(63:64,:) = EEG_origin.data(63:64,:);
+    clear EEG_origin
     EEG.setname = fileNaming{6};
     if savingOpt(6) == 1
         pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
@@ -186,7 +187,7 @@ for subjNumber = 1:numel(cntFolders)
     for i=1:2
         %% get EEG data
         EEG = EEG_origin;
-        %% ----- Step#08 & 09: Epoch data
+        %% ----- Step#08&09: Epoch data
         %% assign bin
         EEG  = pop_binlister( EEG , 'BDF', bdfFile{i}, 'IndexEL',  1, 'SendEL2', 'EEG', 'Voutput',...
             'EEG' );
@@ -210,21 +211,28 @@ for subjNumber = 1:numel(cntFolders)
         if savingOpt(10) == 1
             pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
         end
-        %% ----- Step#11: mark artifacts
-        EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 2], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', [ 0 EEG.xmax*1000] );
+        %% ----- Step#11: mark EOG artifacts
         if i==1
             EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 3], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', targetBaseline );
+            EEG  = pop_artextval( EEG , 'Channel',  63, 'Flag', [ 1 7], 'Threshold', [ -1*artTheshold_HEO artTheshold_HEO], 'Twindow', targetBaseline );
+            EEG  = pop_artextval( EEG , 'Channel',  64, 'Flag', [ 1 8], 'Threshold', [ -1*artTheshold_VEO artTheshold_VEO], 'Twindow', targetBaseline );
+            
+            EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 4], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', [0 1000*EEG.xmax] );
+            EEG  = pop_artextval( EEG , 'Channel',  63, 'Flag', [ 1 5], 'Threshold', [ -1*artTheshold_HEO artTheshold_HEO], 'Twindow', [0 1000*EEG.xmax] );
+            EEG  = pop_artextval( EEG , 'Channel',  64, 'Flag', [ 1 6], 'Threshold', [ -1*artTheshold_VEO artTheshold_VEO], 'Twindow', [0 1000*EEG.xmax] );
+            
         else
-            EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 3], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', cueBaseline );
+            EEG  = pop_artextval( EEG , 'Channel',  1:62, 'Flag', [ 1 3], 'Threshold', [ -1*artTheshold artTheshold], 'Twindow', [cueBaseline(1) 1000*EEG.xmax] );
+            EEG  = pop_artextval( EEG , 'Channel',  63, 'Flag', [ 1 7], 'Threshold', [ -1*artTheshold_HEO artTheshold_HEO], 'Twindow', [cueBaseline(1) 1000*EEG.xmax] );
+            EEG  = pop_artextval( EEG , 'Channel',  64, 'Flag', [ 1 8], 'Threshold', [ -1*artTheshold_VEO artTheshold_VEO], 'Twindow', [cueBaseline(1) 1000*EEG.xmax] );
         end
-        EEG  = pop_artextval( EEG , 'Channel',  63, 'Flag', [ 1 7], 'Threshold', [ -1*artTheshold_HEO artTheshold_HEO], 'Twindow', [ 0 EEG.xmax*1000] ); % HEO
-        EEG  = pop_artblink( EEG , 'Blinkwidth',  400, 'Channel',  64, 'Crosscov',  0.7, 'Flag', [ 1 8], 'Twindow', [ -200 200] ); % VEO
+        
         EEG.setname =[fileNaming{11} subLockObject{i}];
         if savingOpt(11) == 1
             pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
         end
         EEG = pop_summary_AR_eeg_detection(EEG, [tempPath filesep 'AR_summary_' EEG.setname '.txt']);
-       %% ----- Step#12: generate averaged ERP exclude artifacts
+        %% ----- Step#12: generate average ERP
         ERP = pop_averager( EEG , 'Criterion', 'good', 'ExcludeBoundary', 'on', 'SEM', 'on' );
         if savingOpt(12)==1
             ERP = pop_savemyerp(ERP, 'erpname',...
@@ -232,13 +240,15 @@ for subjNumber = 1:numel(cntFolders)
         end
     end
 end
-%% ----- Extend of the script
-% 3. There are some code you can used to do debug 
+%% ----- Usage of the script
+% 3. There are some code you can used to do debug
 %   1) Check plot of EEG data
 %       pop_eegplot(EEG)
 %   2) Save Temp File for detail check
 %       pop_saveset(EEG);
-% 4. There are some append code you can used to do refine preprocess 
+% 4. There are some append code you can used to do refine preprocess
 %   1) clean up for ICA run
 % EEG = pop_continuousartdet( EEG , 'ampth', [ -300 300], 'chanArray',  1:62, 'colorseg', [ 1 0.9765 0.5294], 'forder',  100, 'numChanThreshold'];...
 %     1, 'stepms',  250, 'threshType', 'peak-to-peak', 'winms',  500 );
+%   2) blink check
+% EEG  = pop_artblink( EEG , 'Blinkwidth',  400, 'Channel',  64, 'Crosscov',  0.7, 'Flag', [ 1 8], 'Twindow', [ -200 200] ); % VEO
