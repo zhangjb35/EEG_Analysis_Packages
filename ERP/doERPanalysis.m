@@ -66,9 +66,9 @@ savingOpt = [1;...% import and merge
     0;...% ICA-based EOG correction
     0;...% Generate event list file
     0;...% Assign bin to data based on BDF
-    0;...% Epoch data
+    1;...% Epoch data
     0;...% Band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
-    0;...% Remove artifacts
+    1;...% Remove artifacts
     1]; % Averaging and output ERPs files
 % filter parameter
 filt_1 = 0.05;
