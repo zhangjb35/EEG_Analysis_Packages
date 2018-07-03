@@ -95,7 +95,7 @@ for j = 1:str2double(cell2mat(bdfNum))
     delete(h); 
 end
 for j = 1:str2double(bdfNum{1})
-    inputdlg({['Profix of ERP #' num2str(j)]}, 'Profix of Naming',[1 50],{'_XXX'});
+    subLockObject{j} = cell2mat(inputdlg({['Profix of ERP #' num2str(j)]}, 'Profix of Naming',[1 50],{'_XXX'}));
 end
 % cue time window
 cueRange =  [-100  300];
