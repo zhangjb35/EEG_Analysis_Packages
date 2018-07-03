@@ -20,7 +20,7 @@
 %	7) generate event list file
 %	8) assign bin to data based on BDF
 %	9) epoch data
-%	10) band pass filtering with 0.05 to 30 Hz, wit IIR, Order 2
+%	10) band pass filtering with 0.05 to 30 Hz, with IIR, Order 2
 %	11) remove artifacts
 %	12) averaging and output ERPs files
 
@@ -106,8 +106,8 @@ targetBaseline = [-1200 -1000];
 
 % artifacts theshold used
 artTheshold = 75; % for channels except HEO, VEO; in uV
-artTheshold_HEO = 60;
-artTheshold_VEO = 80;
+artTheshold_HEO = 100;
+artTheshold_VEO = 200;
 %% Path Error Detection
 if numel(cntFolders) == 0
     errordlg('No rawdata detected !!! Please check input.')
@@ -122,7 +122,7 @@ else
         % choose need temp file and create the naming rules
         subjID = cntFolder(end-1:end);
         
-        fileNaming = {['subj' subjID '_r'];...
+        fileNaming = {['subj' subjID '_r'];... % meaning of naming used to mark temp file. See 'which temp file to save' part
             ['subj' subjID '_rc'];...
             ['subj' subjID '_rcr'];....
             ['subj' subjID '_rcrf'];...
@@ -224,9 +224,9 @@ else
             end
             %% extract bin
             if i==1
-                EEG = pop_epochbin( EEG , targetRange, targetBaseline);
+                EEG = pop_epochbin( EEG , targetRange, 'none');
             else
-                EEG = pop_epochbin( EEG , cueRange, cueBaseline);
+                EEG = pop_epochbin( EEG , cueRange, 'none');
             end
             EEG.setname =[fileNaming{9} subLockObject{i}];
             if savingOpt(9) == 1
@@ -237,6 +237,12 @@ else
             EEG.setname =[fileNaming{10} subLockObject{i}];
             if savingOpt(10) == 1
                 pop_saveset(EEG, 'filename', EEG.setname, 'filepath', tempPath);
+            end
+			% Remove Baseline
+			if i==1
+                EEG = pop_rmbase(EEG, targetBaseline);
+            else
+				EEG = pop_rmbase(EEG, cueBaseline);
             end
             %% ----- Step#11: mark EOG artifacts
             if i==1
@@ -278,7 +284,7 @@ else
     end
     close(hwait);
 end
-%% ----- Usage of the script
+%% ----- Extent Code for More Optional Analyzing
 % 3. There are some code you can used to do debug
 %   1) Check plot of EEG data
 %       pop_eegplot(EEG)
