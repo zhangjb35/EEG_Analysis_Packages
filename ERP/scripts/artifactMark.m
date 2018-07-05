@@ -53,8 +53,8 @@ targetRange = [-1350  800];
 targetBaseline = [-1200 -1000];
 
 % use baseline
-useBaseline = 'cue';
-% useBaseline = 'target';
+% useBaseline = 'cue';
+useBaseline = 'target';
 
 % artifacts theshold used
 artTheshold = 75; % for channels except HEO, VEO; in uV

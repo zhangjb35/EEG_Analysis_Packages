@@ -22,7 +22,7 @@ function varargout = analysisChoose(varargin)
 
 % Edit the above text to modify the response to help analysisChoose
 
-% Last Modified by GUIDE v2.5 04-Jul-2018 20:43:10
+% Last Modified by GUIDE v2.5 05-Jul-2018 12:41:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -124,3 +124,11 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 reCorEvent
+
+
+% --- Executes on button press in pushbutton7.
+function pushbutton7_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+avgGrand
